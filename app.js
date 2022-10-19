@@ -11,7 +11,7 @@ const shopRoutes = require('./routes/shop');
 //it parses body only sent via form.
 app.use(bodyParser.urlencoded({extended: true}));
 
-app.use(adminRoutes);
+app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 
 //passed app as it is a va;id request handler
