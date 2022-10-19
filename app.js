@@ -17,4 +17,9 @@ app.use(shopRoutes);
 //passed app as it is a va;id request handler
 //const server = http.createServer(app);
 
+//Handling error for all the HTTP methods
+app.use((req, res, next) => {
+    res.send('<h1>Page not found.</h1>');
+})
+
 app.listen(3000);
