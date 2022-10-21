@@ -12,6 +12,8 @@ const shopRoutes = require('./routes/shop');
 //it parses body only sent via form.
 app.use(bodyParser.urlencoded({extended: true}));
 
+app.use(express.static(path.join(__dirname,'public')))
+
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 
