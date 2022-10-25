@@ -6,6 +6,8 @@ const rootDir = require('../util/path');
 //This route is like a mini Express app which can be tied to the other Express apps
 const router = express.Router();
 
+const products = [];
+
 router.get('/add-product',(req, res, next) => {
     console.log('In users!');
     //send method automatically sets content type to HTML
@@ -14,9 +16,13 @@ router.get('/add-product',(req, res, next) => {
 
 //delete,put,patch,use can be used instead of post:
 router.post('/add-product', (req,res,next) => {
-    console.log(req.body);
+    products.push({ title: req.body.title });
+    // console.log(req.body);
     res.redirect('/');
 });
 
 
-module.exports = router;
+// module.exports = router;
+
+exports.routes = router;
+exports.products = products;
