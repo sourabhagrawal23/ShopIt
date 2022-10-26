@@ -12,8 +12,10 @@ router.get('/', (req,res,next) => {
     // console.log(adminData.products);
     // res.sendFile(path.join(rootDir, 'views', 'shop.html'))
 
+    const products = adminData.products;
+
     //don't need shop.pug because we have set shop as the default template in app.js
-    res.render('shop');
+    res.render('shop', {prods: products, docTitle: 'Shop'});
 
 });
 
