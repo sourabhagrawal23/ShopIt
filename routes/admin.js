@@ -11,7 +11,8 @@ const products = [];
 router.get('/add-product',(req, res, next) => {
     console.log('In users!');
     //send method automatically sets content type to HTML
-    res.sendFile(path.join(rootDir, 'views', 'add-product.html'))
+    // res.sendFile(path.join(rootDir, 'views', 'add-product.html'))
+    res.render('add-product', {pageTitle: 'Add Product'})
 });
 
 //delete,put,patch,use can be used instead of post:

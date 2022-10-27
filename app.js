@@ -23,9 +23,10 @@ app.use(shopRoutes);
 //passed app as it is a va;id request handler
 //const server = http.createServer(app);
 
-//Handling error for all the HTTP methods
+//Handling error for all the HTTP methods - catch all middleware
 app.use((req, res, next) => {
-    res.status(404).sendFile(path.join(__dirname, 'views', '404.html'));
+    // res.status(404).sendFile(path.join(__dirname, 'views', '404.html'));
+    res.status(404).render('404');
 })
 
 app.listen(3000);
