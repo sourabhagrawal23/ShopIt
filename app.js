@@ -26,7 +26,7 @@ app.use(shopRoutes);
 //Handling error for all the HTTP methods - catch all middleware
 app.use((req, res, next) => {
     // res.status(404).sendFile(path.join(__dirname, 'views', '404.html'));
-    res.status(404).render('404');
+    res.status(404).render('404', {pageTitle: 'Page not found'});
 })
 
 app.listen(3000);
