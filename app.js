@@ -3,10 +3,15 @@ const path = require('path');
 
 const express = require('express');
 const bodyParser = require('body-parser');
+const expressHbs = require('express-handlebars');
 
 const app = express();
 
-app.set('view engine','pug');
+//handlebars is not built in engine hence this step
+app.engine('handlebars',expressHbs());
+app.set('view engine','handlebars');
+
+//app.set('view engine','pug');
 app.set('views', 'views');
 
 const adminData = require('./routes/admin');
