@@ -8,7 +8,11 @@ const expressHbs = require('express-handlebars');
 const app = express();
 
 //handlebars is not built in engine hence this step
-app.engine('hbs',expressHbs());
+app.engine('hbs',expressHbs({
+    layoutsDir: 'views/layouts/',
+    defaultLayout: 'main-layout',
+    extname: 'hbs'
+}));
 app.set('view engine','hbs');
 
 //app.set('view engine','pug');
