@@ -1,29 +1,16 @@
 const express = require('express');
 const path = require('path');
 
-const rootDir = require('../util/path');
-
+const productsController = require('../controllers/products');
 //This route is like a mini Express app which can be tied to the other Express apps
 const router = express.Router();
 
-const products = [];
-
-router.get('/add-product',(req, res, next) => {
-    console.log('In users!');
-    //send method automatically sets content type to HTML
-    // res.sendFile(path.join(rootDir, 'views', 'add-product.html'))
-    res.render('add-product', {pageTitle: 'Add Product', path: '/admin/add-product',formsCSS: true, productCSS: true, activeAddProduct: true})
-});
+router.get('/add-product', productsController.getAddProduct);
 
 //delete,put,patch,use can be used instead of post:
-router.post('/add-product', (req,res,next) => {
-    products.push({ title: req.body.title });
-    // console.log(req.body);
-    res.redirect('/');
-});
+router.post('/add-product', productsController.postAddProduct);
 
 
 // module.exports = router;
 
-exports.routes = router;
-exports.products = products;
+module.exports = router;

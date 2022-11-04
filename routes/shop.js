@@ -2,21 +2,11 @@ const path = require('path')
 
 const express = require('express');
 
-const rootDir = require('../util/path');
+const productsController = require('../controllers/products');
 
 //This route is like a mini Express app which can be tied to the other Express apps
 const router = express.Router();
-const adminData = require('./admin');
 
-router.get('/', (req,res,next) => {
-    // console.log(adminData.products);
-    // res.sendFile(path.join(rootDir, 'views', 'shop.html'))
-
-    const products = adminData.products;
-
-    //don't need shop.pug because we have set shop as the default template in app.js
-    res.render('shop', {prods: products, pageTitle: 'Shop', path: '/', hasProducts: products.length > 0, activeShop: true, productCSS: true});
-
-});
+router.get('/', productsController.getProducts);
 
 module.exports = router;
