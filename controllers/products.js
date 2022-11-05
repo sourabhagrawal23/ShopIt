@@ -22,6 +22,7 @@ exports.getProducts = (req,res,next) => {
     // console.log(adminData.products);
     // res.sendFile(path.join(rootDir, 'views', 'shop.html'))
     //don't need shop.pug because we have set shop as the default template in app.js
-    const products = Product.fetchAll()
-    res.render('shop', { prods: products, pageTitle: 'Shop', path: '/', hasProducts: products.length > 0, activeShop: true, productCSS: true });
+    Product.fetchAll( products => {
+        res.render('shop', { prods: products, pageTitle: 'Shop', path: '/', hasProducts: products.length > 0, activeShop: true, productCSS: true });
+    })
 }
