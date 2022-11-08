@@ -14,6 +14,7 @@ router.get('/products', adminController.getProducts);
 //delete,put,patch,use can be used instead of post:
 router.post('/add-product', adminController.postAddProduct);
 
+router.get('/edit-product/:productId', adminController.getEditProduct);
 
 // module.exports = router;
 

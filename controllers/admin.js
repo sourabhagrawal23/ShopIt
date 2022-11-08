@@ -3,7 +3,7 @@ const Product = require('../models/product');
 exports.getAddProduct = (req, res, next) => {
     //send method automatically sets content type to HTML
     // res.sendFile(path.join(rootDir, 'views', 'add-product.html'))
-    res.render('admin/add-product', {pageTitle: 'Add Product', path: '/admin/add-product',formsCSS: true, productCSS: true, activeAddProduct: true})
+    res.render('admin/edit-product', {pageTitle: 'Add Product', path: '/admin/add-product'})
 }
 
 
@@ -21,6 +21,17 @@ exports.postAddProduct = (req,res,next) => {
 
     res.redirect('/');
 }
+
+exports.getEditProduct = (req, res, next) => {
+    //send method automatically sets content type to HTML
+    // res.sendFile(path.join(rootDir, 'views', 'add-product.html'))
+    const editMode = req.query.edit;
+    if(!editMode){
+        return res.redirect('/');
+    }
+    res.render('admin/edit-product', {pageTitle: 'Edit Product', path: '/admin/edit-product', editing:true})
+}
+
 
 exports.getProducts = (req,res,next) => {
     Product.fetchAll( products => {
