@@ -1,5 +1,6 @@
 // const fs = require('fs');
 // const path = require('path');
+const db = require('../util/database');
 
 const Cart = require('./cart');
 
@@ -53,7 +54,6 @@ module.exports = class Product {
   // }
 
 save() {
-  
 }
 
   // static deleteById(id) {
@@ -84,6 +84,7 @@ save() {
   }
 
   static fetchAll() {
+    return db.execute('SELECT * FROM products');
   }
 
   static findById(id) { 
