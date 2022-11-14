@@ -1,7 +1,7 @@
-const Cart = require('../models/cart');
-const CartItem = require('../models/cart-item');
+// const Cart = require('../models/cart');
+// const CartItem = require('../models/cart-item');
 const Product = require('../models/product');
-const Order = require('../models/order');
+// const Order = require('../models/order');
 
 exports.getAddProduct = (req, res, next) => {
     //send method automatically sets content type to HTML
@@ -31,13 +31,13 @@ exports.getProducts = (req, res, next) => {
     //     res.render('shop/product-list', { prods: products, pageTitle: 'All Products', path: '/products' });
     // })
 
-    //Code for Core SQL
+    // Code for Core SQL
     // Product.fetchAll().then(([rows]) => {
     //     res.render('shop/product-list', { prods: rows, pageTitle: 'All Products', path: '/products' });
     // })
     // .catch(err => console.log(err));
 
-    Product.findAll()
+    Product.fetchAll()
         .then(products => {
             res.render('shop/product-list', {
                 prods: products,
@@ -66,7 +66,7 @@ exports.getProducts = (req, res, next) => {
 exports.getProduct = (req, res, next) => {
     const prodId = req.params.productId;
 
-    Product.findByPk(prodId)
+    Product.findById(prodId)
         .then(product => {
             res.render('shop/product-detail', {
                 product: product,
@@ -90,7 +90,7 @@ exports.getIndex = (req, res, next) => {
     // .catch(err => console.log(err));
 
 
-    Product.findAll()
+    Product.fetchAll()
         .then(products => {
             res.render('shop/index', {
                 prods: products,
