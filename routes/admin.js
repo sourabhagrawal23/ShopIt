@@ -7,11 +7,11 @@ const router = express.Router();
 
 router.get('/add-product', adminController.getAddProduct);
 
-//admin /admin/products => GET
+// //admin /admin/products => GET
 router.get('/products', adminController.getProducts);
 
-//admin /admin/products => POST
-//delete,put,patch,use can be used instead of post:
+// //admin /admin/products => POST
+// //delete,put,patch,use can be used instead of post:
 router.post('/add-product', adminController.postAddProduct);
 
 router.get('/edit-product/:productId', adminController.getEditProduct);

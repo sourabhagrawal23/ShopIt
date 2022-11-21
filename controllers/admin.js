@@ -15,7 +15,8 @@ exports.postAddProduct = (req,res,next) => {
     const imageUrl = req.body.imageUrl;
     const price = req.body.price;
     const description = req.body.description;
-    const product = new Product(title,price,description,imageUrl, null, req.user._id);
+    // const product = new Product(title,price,description,imageUrl, null, req.user._id);
+    const product = new Product({title: title ,price: price, description:description, imageUrl: imageUrl});
     product
     .save()
     .then((result)=> {
@@ -64,13 +65,14 @@ exports.postEditProduct = (req, res, next) => {
     //   updatedPrice
     // );
 
-    const product = new Product(
-        updatedTitle,
-        updatedPrice,
-        updatedDesc,
-        updatedImageUrl,
-        prodId
-    );
+    // Raw MongoDB
+    // const product = new Product(
+    //     updatedTitle,
+    //     updatedPrice,
+    //     updatedDesc,
+    //     updatedImageUrl,
+    //     prodId
+    // );
 
     // Product.findById(prodId)
     // .then(product => {
@@ -80,8 +82,15 @@ exports.postEditProduct = (req, res, next) => {
     //     product.imageUrl = updatedImageUrl;
     //     return product.save();
     // })
-    product
-    .save()
+
+    Product.findById(prodId).then(product => {
+        product.title = updatedTitle;
+        product.price = updatedPrice;
+        product.description = updatedDesc;
+        product.imageUrl = updatedImageUrl;
+        return product
+        .save()
+    })
     .then(result => {
         res.redirect('/admin/products');
         console.log('UPDATED PRODUCT');
@@ -96,7 +105,7 @@ exports.getProducts = (req,res,next) => {
 
     // Product.findAll()
     // req.user.getProducts()
-    Product.fetchAll()
+    Product.find()
     .then( products => {
         res.render('admin/products', { prods: products, pageTitle: 'Admin Products', path: '/admin/products' });
     })
