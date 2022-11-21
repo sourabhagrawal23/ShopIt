@@ -1,3 +1,5 @@
+// Not needed anymore as model has been restructured now
+
 const Sequelize = require('Sequelize');
 
 const sequelize = require('../util/database');
