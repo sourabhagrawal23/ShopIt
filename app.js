@@ -19,6 +19,7 @@ app.set('views', 'views');
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
+const authRoutes = require('./routes/auth');
 
 // db.execute('SELECT * FROM PRODUCTS')
 // .then( result => {
@@ -47,6 +48,7 @@ app.use((req, res, next) => {
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
+app.use(authRoutes);
 
 //passed app as it is a va;id request handler
 //const server = http.createServer(app);
