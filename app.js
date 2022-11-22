@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 
 const errorController = require('./controllers/error');
 // const mongoConnect = require('./util/database').mongoConnect;
-// const User = require('./models/user');
+const User = require('./models/user');
 
 const app = express();
 
@@ -33,16 +33,17 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.use(express.static(path.join(__dirname,'public')))
 
-// app.use((req, res, next) => {
-//     User.findById('6378ecb7d37a432399732323')
-//     .then(user => {
-//         // req.user = user;
-//         // Above user was not having methods of user model, hence doing it differently
-//         req.user = new User(user.name, user.email, user.cart, user._id);
-//         next();
-//     })
-//     .catch(err => {console.log(err)});
-// });
+app.use((req, res, next) => {
+    User.findById('637b8ce105699be0c5cf7817')
+    .then(user => {
+        // req.user = user;
+        // Above user was not having methods of user model, hence doing it differently
+        // req.user = new User(user.name, user.email, user.cart, user._id);
+        req.user = user;
+        next();
+    })
+    .catch(err => {console.log(err)});
+});
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
@@ -61,6 +62,20 @@ mongoose.connect('mongodb+srv://ShoppingApplication:Password@cluster0.3hs8ppr.mo
     dbName: 'Shop',
 })
 .then(result => {
+    User.findOne().then(user => {
+        if(!user)
+        {
+            const user = new User({
+                name: 'Sourabh',
+                email: 'sourabhkhs23@gmail.com',
+                cart: {
+                    items: []
+                }
+            });
+            user.save();
+        }
+    })
+    
     app.listen(3000);
 })
 .catch( err => {
