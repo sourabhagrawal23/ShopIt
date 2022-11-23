@@ -5,13 +5,20 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const session = require('express-session');
+const MongoDBStore = require('connect-mongodb-session')(session);
 
 const errorController = require('./controllers/error');
 // const mongoConnect = require('./util/database').mongoConnect;
 const User = require('./models/user');
 
-const app = express();
+const MONGODB_URI = 'mongodb+srv://ShoppingApplication:Password@cluster0.3hs8ppr.mongodb.net'
 
+const app = express();
+const store = new MongoDBStore({
+    uri: MONGODB_URI,
+    databaseName: 'Shop',
+    collection: 'sessions'
+});
 
 app.set('view engine','ejs');
 
@@ -33,11 +40,14 @@ const authRoutes = require('./routes/auth');
 //it parses body only sent via form.
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static(path.join(__dirname,'public')))
-app.use(session({
+app.use(
+    session({
     secret: 'my secret',
     resave: false,
-    saveUninitialized: false
-}))
+    saveUninitialized: false,
+    store: store
+})
+);
 
 app.use((req, res, next) => {
     User.findById('637b8ce105699be0c5cf7817')
@@ -65,7 +75,7 @@ app.use(errorController.get404);
 //     app.listen(3000);
 // });
 
-mongoose.connect('mongodb+srv://ShoppingApplication:Password@cluster0.3hs8ppr.mongodb.net/?retryWrites=true&w=majority', {
+mongoose.connect(MONGODB_URI, {
     dbName: 'Shop',
 })
 .then(result => {
