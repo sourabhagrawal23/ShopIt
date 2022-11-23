@@ -4,6 +4,7 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const session = require('express-session');
 
 const errorController = require('./controllers/error');
 // const mongoConnect = require('./util/database').mongoConnect;
@@ -31,8 +32,12 @@ const authRoutes = require('./routes/auth');
 
 //it parses body only sent via form.
 app.use(bodyParser.urlencoded({extended: true}));
-
 app.use(express.static(path.join(__dirname,'public')))
+app.use(session({
+    secret: 'my secret',
+    resave: false,
+    saveUninitialized: false
+}))
 
 app.use((req, res, next) => {
     User.findById('637b8ce105699be0c5cf7817')
