@@ -3,7 +3,11 @@ const Product = require('../models/product');
 exports.getAddProduct = (req, res, next) => {
     //send method automatically sets content type to HTML
     // res.sendFile(path.join(rootDir, 'views', 'add-product.html'))
-    res.render('admin/edit-product', {pageTitle: 'Add Product', path: '/admin/add-product', editing: false})
+    res.render('admin/edit-product', {pageTitle: 'Add Product', 
+    path: '/admin/add-product', 
+    editing: false, 
+    isAuthenticated: req.isLoggedIn
+})
 };
 
 
@@ -45,7 +49,8 @@ exports.getEditProduct = (req, res, next) => {
         {
             return res.redirect('/');
         }
-        res.render('admin/edit-product', {pageTitle: 'Edit Product', path: '/admin/edit-product', editing:true, product:product})
+        res.render('admin/edit-product', {pageTitle: 'Edit Product', path: '/admin/edit-product', editing:true, product:product,
+        isAuthenticated: req.isLoggedIn})
     });
 };
 
@@ -98,7 +103,7 @@ exports.postEditProduct = (req, res, next) => {
     .catch(err => console.log(err));
   };
 
-exports.getProducts = (req,res,next) => {
+exports.getProducts = (req, res, next) => {
     // Product.fetchAll( products => {
     //     res.render('admin/products', { prods: products, pageTitle: 'Admin Products', path: '/admin/products' });
     // });
@@ -106,10 +111,15 @@ exports.getProducts = (req,res,next) => {
     // Product.findAll()
     // req.user.getProducts()
     Product.find()
-    .then( products => {
-        res.render('admin/products', { prods: products, pageTitle: 'Admin Products', path: '/admin/products' });
-    })
-    .catch(err => console.log(err));
+        .then(products => {
+            res.render('admin/products', {
+                prods: products, 
+                pageTitle: 'Admin Products', 
+                path: '/admin/products',
+                isAuthenticated: req.isLoggedIn
+            });
+        })
+        .catch(err => console.log(err));
 };
 
 exports.postDeleteProduct = (req, res, next) => {
