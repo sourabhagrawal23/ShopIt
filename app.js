@@ -49,17 +49,17 @@ app.use(
 })
 );
 
-app.use((req, res, next) => {
-    User.findById('637b8ce105699be0c5cf7817')
-    .then(user => {
-        // req.user = user;
-        // Above user was not having methods of user model, hence doing it differently
-        // req.user = new User(user.name, user.email, user.cart, user._id);
-        req.user = user;
-        next();
-    })
-    .catch(err => {console.log(err)});
-});
+// app.use((req, res, next) => {
+//     User.findById('637b8ce105699be0c5cf7817')
+//     .then(user => {
+//         // req.user = user;
+//         // Above user was not having methods of user model, hence doing it differently
+//         // req.user = new User(user.name, user.email, user.cart, user._id);
+//         req.user = user;
+//         next();
+//     })
+//     .catch(err => {console.log(err)});
+// });
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
