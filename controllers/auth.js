@@ -36,9 +36,10 @@ exports.postLogin = (req, res, next) => {
     // User.findById('637b8ce105699be0c5cf7817')
     User.findOne({ email: email })
         .then(user => {
-            if (!user) {
-                return res.redirect('/login');
-            }
+            //Basic route protection commented now because middleware path implemented
+            // if (!user) {
+            //     return res.redirect('/login');
+            // }
             bcrypt.compare(password, user.password).then(
                 doMatch => {
                     console.log(doMatch)
