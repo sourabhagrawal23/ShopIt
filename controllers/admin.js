@@ -3,6 +3,12 @@ const Product = require('../models/product');
 exports.getAddProduct = (req, res, next) => {
     //send method automatically sets content type to HTML
     // res.sendFile(path.join(rootDir, 'views', 'add-product.html'))
+
+    if(!req.session.isLoggedIn)
+    {
+        res.redirect('/login');
+    }
+
     res.render('admin/edit-product', {pageTitle: 'Add Product', 
     path: '/admin/add-product', 
     editing: false, 
