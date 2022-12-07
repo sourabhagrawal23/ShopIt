@@ -90,9 +90,8 @@ exports.postLogin = (req, res, next) => {
 exports.postSignup = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
-    const confirmPassword = req.body.confirmPassword;
     const errors = validationResult(req);
-    if(!errors.isEmpty()) {
+    if (!errors.isEmpty()) {
         console.log(errors.array());
         return res.status(422).render('auth/signup', {
             path: '/signup',
@@ -100,36 +99,24 @@ exports.postSignup = (req, res, next) => {
             errorMessage: errors.array()[0].msg
         })
     }
-
-    User.findOne({ email: email })
-        .then(
-            userDoc => {
-                if (userDoc) {
-                    req.flash('error', 'E-mail already exists, please pick a different one')
-                    return res.redirect('/signup')
-                }
-                return bcrypt.hash(password, 12)
-                    .then(hashedPassword => {
-                        const user = new User({
-                            email: email,
-                            password: hashedPassword,
-                            cart: { items: [] }
-                        })
-                        return user.save();
-                    })
-                    .then(result => {
-                        res.redirect('/login');
-                        return transporter.sendMail({
-                            to: email,
-                            from: 's.kharsia@gmail.com',
-                            subject: 'Signup succeeded!',
-                            html: '<h1>You successfully signed up!</h1>'
-                        });
-                    })
-                    .catch(err => {
-                        console.log(err);
-                    })
+    return bcrypt.hash(password, 12)
+        .then(hashedPassword => {
+            const user = new User({
+                email: email,
+                password: hashedPassword,
+                cart: { items: [] }
             })
+            return user.save();
+        })
+        .then(result => {
+            res.redirect('/login');
+            return transporter.sendMail({
+                to: email,
+                from: 's.kharsia@gmail.com',
+                subject: 'Signup succeeded!',
+                html: '<h1>You successfully signed up!</h1>'
+            });
+        })
         .catch(err => {
             console.log(err);
         })
@@ -232,7 +219,7 @@ exports.postNewPassword = (req, res, next) => {
     })
         .then(user => {
             resetUser = user;
-            return bcrypt.hash(NewPassword,12);
+            return bcrypt.hash(NewPassword, 12);
         })
         .then(hashedPassword => {
             resetUser.password = hashedPassword;
