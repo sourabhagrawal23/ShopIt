@@ -47,7 +47,9 @@ exports.getSignup = (req, res, next) => {
     res.render('auth/signup', {
         path: '/signup',
         pageTitle: 'Signup',
-        errorMessage: message
+        errorMessage: message,
+        oldInput: {email:"", password:"", confirmPassword: ""},
+        validationErrors: ""
     })
 }
 
@@ -60,10 +62,15 @@ exports.postLogin = (req, res, next) => {
     const errors = validationResult(req);
     if(!errors.isEmpty())
     {
-        res.render('auth/login', {
+        res.status(422).render('auth/login', {
             path: '/login',
             pageTitle: 'Login',
-            errorMessage: error.array()[0].msg
+            errorMessage: error.array()[0].msg,
+            oldInput: {
+                email: email,
+                password: password
+            },
+            validationErrors: errors.array()
         });
     }
 
@@ -106,7 +113,9 @@ exports.postSignup = (req, res, next) => {
         return res.status(422).render('auth/signup', {
             path: '/signup',
             pageTitle: 'Signup',
-            errorMessage: errors.array()[0].msg
+            errorMessage: errors.array()[0].msg,
+            oldInput: {email:email, password:password, confirmPassword: req.body.confirmPassword},
+            validationErrors: errors.array()
         })
     }
     return bcrypt.hash(password, 12)
