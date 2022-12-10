@@ -24,7 +24,7 @@ const store = new MongoDBStore({
 });
 const csrfProtection = csrf();
 
-app.set('view engine','ejs');
+app.set('view engine', 'ejs');
 
 //app.set('view engine','pug');
 app.set('views', 'views');
@@ -42,15 +42,15 @@ const authRoutes = require('./routes/auth');
 // });
 
 //it parses body only sent via form.
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(express.static(path.join(__dirname,'public')))
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')))
 app.use(
     session({
-    secret: 'my secret',
-    resave: false,
-    saveUninitialized: false,
-    store: store
-})
+        secret: 'my secret',
+        resave: false,
+        saveUninitialized: false,
+        store: store
+    })
 );
 app.use(csrfProtection);
 app.use(flash());
@@ -68,16 +68,21 @@ app.use(flash());
 // });
 
 
-app.use((req,res,next) => {
+app.use((req, res, next) => {
     if (!req.session.user) {
         return next();
     }
     User.findById(req.session.user._id)
-    .then(user => {
-        req.user = user;
-        next();
-    })
-    .catch(err => console.log(err));
+        .then(user => {
+            if (!user) {
+                return next();
+            }
+            req.user = user;
+            next();
+        })
+        .catch(err => {
+            next (new Error(err));
+        });
 });
 
 app.use((req, res, next) => {
@@ -93,8 +98,21 @@ app.use(authRoutes);
 //passed app as it is a va;id request handler
 //const server = http.createServer(app);
 
-//Handling error for all the HTTP methods - catch all middleware
+//Route
+app.get('/500',errorController.get500);
+
+//Handling error for all the HTTP methods - catch all middleware/handler
 app.use(errorController.get404);
+
+app.use((error, req, res, next) => {
+    // res.status(error.httpStatusCode).render(...);
+    // res.redirect('/500');
+    res.status(500).render('500', { 
+        pageTitle: 'Error!', 
+        path: '/500' ,
+        isAuthenticated: req.session.isLoggedIn
+      });
+})
 
 // mongoConnect(() => {
 //     app.listen(3000);
@@ -103,23 +121,23 @@ app.use(errorController.get404);
 mongoose.connect(MONGODB_URI, {
     dbName: 'Shop',
 })
-.then(result => {
-    // User.findOne().then(user => {
-    //     if(!user)
-    //     {
-    //         const user = new User({
-    //             name: 'Sourabh',
-    //             email: 'sourabhkhs23@gmail.com',
-    //             cart: {
-    //                 items: []
-    //             }
-    //         });
-    //         user.save();
-    //     }
-    // })
-    
-    app.listen(3000);
-})
-.catch( err => {
-    console.log(err);
-})
+    .then(result => {
+        // User.findOne().then(user => {
+        //     if(!user)
+        //     {
+        //         const user = new User({
+        //             name: 'Sourabh',
+        //             email: 'sourabhkhs23@gmail.com',
+        //             cart: {
+        //                 items: []
+        //             }
+        //         });
+        //         user.save();
+        //     }
+        // })
+
+        app.listen(3000);
+    })
+    .catch(err => {
+        console.log(err);
+    })
