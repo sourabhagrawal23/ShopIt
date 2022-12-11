@@ -8,6 +8,7 @@ const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
 const flash = require('connect-flash');
+const multer  = require('multer')
 
 
 const errorController = require('./controllers/error');
@@ -43,6 +44,10 @@ const authRoutes = require('./routes/auth');
 
 //it parses body only sent via form.
 app.use(bodyParser.urlencoded({ extended: true }));
+
+//multer looks for single file
+app.use(multer().single('image'))
+
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(
     session({
