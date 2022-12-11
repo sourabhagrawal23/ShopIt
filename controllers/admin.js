@@ -30,6 +30,7 @@ exports.postAddProduct = (req, res, next) => {
     const description = req.body.description;
     if(!image)
     {
+        console.log("image error");
         return res.status(422).render('admin/edit-product', {
             pageTitle: 'Add Product', 
             path: '/admin/add-product', 
@@ -48,6 +49,7 @@ exports.postAddProduct = (req, res, next) => {
 
     if(!errors.isEmpty())
     {
+        console.log("error is not empty")
         return res.status(422).render('admin/edit-product', {
             pageTitle: 'Add Product', 
             path: '/admin/add-product', 
@@ -68,7 +70,7 @@ exports.postAddProduct = (req, res, next) => {
 
     // const product = new Product(title,price,description,imageUrl, null, req.user._id);
     const product = new Product({
-        _id: new mongoose.Types.ObjectId('637cc8e9c08edde69874084e'),
+        // _id: new mongoose.Types.ObjectId('637cc8e9c08edde69874084e'),
         title: title,
         price: price,
         description: description,

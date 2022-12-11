@@ -356,9 +356,10 @@ exports.getInvoice = (req, res, next) => {
             if (!order) {
                 return next(new Error('No order found.'));
             }
-            if (order.user.userId.toString() == req.user._id.toString()) {
+            if (order.user.userId.toString() !== req.user._id.toString()) {
                 return next(new Error('Unauthorized'));
             }
+            
             const invoiceName = 'invoice-' + orderId + '.pdf';
             const invoicePath = path.join('data', 'invoices', invoiceName);
             //Retrieve files using node's file system
@@ -380,7 +381,7 @@ exports.getInvoice = (req, res, next) => {
             // Piping output from readable to the writable stream. Res is the writable stream
             const file = fs.createReadStream(invoicePath);
             res.setHeader('Content-Type', 'application/pdf');
-            res.setHeader('Content-Disposition', 'inline; filename="' + fileName + '"');
+            res.setHeader('Content-Disposition', 'inline; filename="' + invoiceName + '"');
             file.pipe(res);
         })
         .catch(err => next(err));
