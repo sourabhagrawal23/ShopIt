@@ -25,6 +25,29 @@ const store = new MongoDBStore({
 });
 const csrfProtection = csrf();
 
+//Storage engine to be used with Multer
+const fileStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null,'images')
+    },
+    filename: (req, file, cb) => {
+        cb(null, new Date().toISOString() + '-' + file.originalname)
+    }
+});
+
+const fileFilter = (req, file, cb) => {
+    
+    if(file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg')
+    {
+        //null as error, true to accept this file
+        cb(null, true);
+    }
+    else
+    {
+        cb(null, false);
+    }
+};
+
 app.set('view engine', 'ejs');
 
 //app.set('view engine','pug');
@@ -46,9 +69,17 @@ const authRoutes = require('./routes/auth');
 app.use(bodyParser.urlencoded({ extended: true }));
 
 //multer looks for single file
-app.use(multer().single('image'))
+//dest: 'images' stores it inside images folder rather than the buffer
+// app.use(multer({dest: 'images'}).single('image'))
 
-app.use(express.static(path.join(__dirname, 'public')))
+
+app.use(multer({storage: fileStorage, fileFilter: fileFilter}).single('image'))
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+//Serve the files inside images folder as if they were in the root folder
+app.use('/images', express.static(path.join(__dirname, 'images')));
+
 app.use(
     session({
         secret: 'my secret',
