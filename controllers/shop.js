@@ -350,6 +350,18 @@ exports.getCheckout = (req, res, next) => {
 
 exports.getInvoice = (req, res, next) => {
     const orderId = req.params.orderId;
+    //Only 'Authorised' user should be allowed to download
+    Order.findById(orderId)
+    .then(order => {
+        if(!order){
+        return next(new Error('No order found.'));
+    }
+    if(order.user.userId.toString() == req.user._id.toString()){
+        return next(new Error('Unauthorized'));
+    }
+    })
+    .catch (err => next(err));
+
     const invoiceName = 'invoice-' + orderId + '.pdf';
     const invoicePath = path.join('data', 'invoices', invoiceName);
     //Retrieve files using node's file system
@@ -362,7 +374,7 @@ exports.getInvoice = (req, res, next) => {
         res.setHeader('Content-Type', 'application/pdf');
         //Allow us to define how content should be served, inline/attachment here
         res.setHeader('Content-Disposition', 'inline; filename="' + fileName + '"');
-        
+
         // res.setHeader('Content-Disposition', 'attachment; filename="' + fileName + '"');
         res.send(data);
     })
