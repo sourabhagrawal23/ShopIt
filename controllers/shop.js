@@ -352,30 +352,36 @@ exports.getInvoice = (req, res, next) => {
     const orderId = req.params.orderId;
     //Only 'Authorised' user should be allowed to download
     Order.findById(orderId)
-    .then(order => {
-        if(!order){
-        return next(new Error('No order found.'));
-    }
-    if(order.user.userId.toString() == req.user._id.toString()){
-        return next(new Error('Unauthorized'));
-    }
-    })
-    .catch (err => next(err));
+        .then(order => {
+            if (!order) {
+                return next(new Error('No order found.'));
+            }
+            if (order.user.userId.toString() == req.user._id.toString()) {
+                return next(new Error('Unauthorized'));
+            }
+            const invoiceName = 'invoice-' + orderId + '.pdf';
+            const invoicePath = path.join('data', 'invoices', invoiceName);
+            //Retrieve files using node's file system
+            //Not the efficient way as it will read files in memory
+            // fs.readFile(invoicePath, (err, data) => {
+            //     //data will be in the form of a buffer
+            //     if (err) {
+            //         //default error handling function will take over
+            //         next(err);
+            //     }
+            //     res.setHeader('Content-Type', 'application/pdf');
+            //     //Allow us to define how content should be served, inline/attachment here
+            //     res.setHeader('Content-Disposition', 'inline; filename="' + fileName + '"');
 
-    const invoiceName = 'invoice-' + orderId + '.pdf';
-    const invoicePath = path.join('data', 'invoices', invoiceName);
-    //Retrieve files using node's file system
-    fs.readFile(invoicePath, (err, data) => {
-        //data will be in the form of a buffer
-        if (err) {
-            //default error handling function will take over
-            next(err);
-        }
-        res.setHeader('Content-Type', 'application/pdf');
-        //Allow us to define how content should be served, inline/attachment here
-        res.setHeader('Content-Disposition', 'inline; filename="' + fileName + '"');
+            //     // res.setHeader('Content-Disposition', 'attachment; filename="' + fileName + '"');
+            //     res.send(data);
+            // })
 
-        // res.setHeader('Content-Disposition', 'attachment; filename="' + fileName + '"');
-        res.send(data);
-    })
+            // Piping output from readable to the writable stream. Res is the writable stream
+            const file = fs.createReadStream(invoicePath);
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', 'inline; filename="' + fileName + '"');
+            file.pipe(res);
+        })
+        .catch(err => next(err));
 }
