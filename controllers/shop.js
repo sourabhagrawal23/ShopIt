@@ -5,6 +5,7 @@ const Order = require('../models/order');
 const product = require('../models/product');
 const fs = require('fs');
 const path = require('path')
+const PDFDocument = require('pdfkit')
 
 exports.getAddProduct = (req, res, next) => {
     //send method automatically sets content type to HTML
@@ -362,6 +363,30 @@ exports.getInvoice = (req, res, next) => {
             
             const invoiceName = 'invoice-' + orderId + '.pdf';
             const invoicePath = path.join('data', 'invoices', invoiceName);
+
+            //Readable stream
+            const pdfDoc = new PDFDocument();
+
+            pdfDoc.pipe(fs.createWriteStream(invoicePath));
+            pdfDoc.pipe(res); 
+
+            pdfDoc.fontSize(26).text('Invoice', {
+                underline: true
+            });
+            pdfDoc.text('---------------------------');
+            let totalPrice = 0;
+            order.products.forEach(prod => {
+                totalPrice = totalPrice + prod.quantity * prod.product.price;
+                pdfDoc
+                .fontSize(14)
+                .text(prod.product.title + ' - ' + prod.quantity + ' x ' + '$' + prod.product.price);
+            });
+            pdfDoc.text('---');
+            pdfDoc.fontSize(20).text('Total Price: $' + totalPrice);
+
+            //Done writing stream
+            pdfDoc.end();
+
             //Retrieve files using node's file system
             //Not the efficient way as it will read files in memory
             // fs.readFile(invoicePath, (err, data) => {
@@ -379,10 +404,10 @@ exports.getInvoice = (req, res, next) => {
             // })
 
             // Piping output from readable to the writable stream. Res is the writable stream
-            const file = fs.createReadStream(invoicePath);
-            res.setHeader('Content-Type', 'application/pdf');
-            res.setHeader('Content-Disposition', 'inline; filename="' + invoiceName + '"');
-            file.pipe(res);
+            // const file = fs.createReadStream(invoicePath);
+            // res.setHeader('Content-Type', 'application/pdf');
+            // res.setHeader('Content-Disposition', 'inline; filename="' + invoiceName + '"');
+            // file.pipe(res);
         })
         .catch(err => next(err));
 }
