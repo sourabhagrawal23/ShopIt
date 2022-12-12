@@ -7,6 +7,8 @@ const fs = require('fs');
 const path = require('path')
 const PDFDocument = require('pdfkit')
 
+const ITEMS_PER_PAGE = 2;
+
 exports.getAddProduct = (req, res, next) => {
     //send method automatically sets content type to HTML
     // res.sendFile(path.join(rootDir, 'views', 'add-product.html'))
@@ -41,12 +43,29 @@ exports.getProducts = (req, res, next) => {
     // })
     // .catch(err => console.log(err));
 
-    Product.find()
+    const page = +req.query.page || 1;
+    let totalItems;
+
+    Product
+        .find()
+        .countDocuments()
+        .then(numProducts => {
+            totalItems = numProducts;
+            return Product.find()
+                .skip((page - 1) * ITEMS_PER_PAGE)
+                .limit(ITEMS_PER_PAGE);
+        })
         .then(products => {
             res.render('shop/product-list', {
                 prods: products,
-                pageTitle: 'All products',
-                path: '/products'
+                pageTitle: 'Products',
+                path: '/products',
+                currentPage: page,
+                hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+                hasPreviousPage: page > 1,
+                nextPage: page + 1,
+                previousPage: page - 1,
+                lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE)
             });
         })
         .catch(err => {
@@ -100,13 +119,29 @@ exports.getIndex = (req, res, next) => {
     // })
     // .catch(err => console.log(err));
 
-
-    Product.find()
+    // + here converts string to integer
+    const page = +req.query.page || 1;
+    let totalItems;
+    Product
+        .find()
+        .countDocuments()
+        .then(numProducts => {
+            totalItems = numProducts;
+            return Product.find()
+                .skip((page - 1) * ITEMS_PER_PAGE)
+                .limit(ITEMS_PER_PAGE);
+        })
         .then(products => {
             res.render('shop/index', {
                 prods: products,
                 pageTitle: 'Shop',
-                path: '/'
+                path: '/',
+                currentPage: page,
+                hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+                hasPreviousPage: page > 1,
+                nextPage: page + 1,
+                previousPage: page - 1,
+                lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE)
             });
         })
         .catch(err => {
@@ -114,7 +149,6 @@ exports.getIndex = (req, res, next) => {
             error.httpStatusCode = 500;
             return next(error);
         });
-
 }
 
 exports.getCart = (req, res, next) => {
@@ -360,7 +394,7 @@ exports.getInvoice = (req, res, next) => {
             if (order.user.userId.toString() !== req.user._id.toString()) {
                 return next(new Error('Unauthorized'));
             }
-            
+
             const invoiceName = 'invoice-' + orderId + '.pdf';
             const invoicePath = path.join('data', 'invoices', invoiceName);
 
@@ -368,7 +402,7 @@ exports.getInvoice = (req, res, next) => {
             const pdfDoc = new PDFDocument();
 
             pdfDoc.pipe(fs.createWriteStream(invoicePath));
-            pdfDoc.pipe(res); 
+            pdfDoc.pipe(res);
 
             pdfDoc.fontSize(26).text('Invoice', {
                 underline: true
@@ -378,8 +412,8 @@ exports.getInvoice = (req, res, next) => {
             order.products.forEach(prod => {
                 totalPrice = totalPrice + prod.quantity * prod.product.price;
                 pdfDoc
-                .fontSize(14)
-                .text(prod.product.title + ' - ' + prod.quantity + ' x ' + '$' + prod.product.price);
+                    .fontSize(14)
+                    .text(prod.product.title + ' - ' + prod.quantity + ' x ' + '$' + prod.product.price);
             });
             pdfDoc.text('---');
             pdfDoc.fontSize(20).text('Total Price: $' + totalPrice);
