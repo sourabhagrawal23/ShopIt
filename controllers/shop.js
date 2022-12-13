@@ -8,7 +8,7 @@ const path = require('path');
 const PDFDocument = require('pdfkit');
 const { request } = require('http');
 //Add secret key from stripe here
-const stripe = require('stripe')('');
+const stripe = require('stripe')('sk_test_51MET54SJThs2KGdaOMPSd4cYGgfCIrrDvBnDVzAYmz2Clmcl0Nw89WxFKvaFYEAM6j8GElzkhgk4LtkCX83RYnNx00BTnwY4V4');
 
 const ITEMS_PER_PAGE = 2;
 
@@ -354,7 +354,6 @@ exports.getCheckoutSuccess = (req, res, next) => {
         //   .execPopulate()
         .then(user => {
             console.log("Sourabh");
-
             const products = user.cart.items.map(i => {
                 return { quantity: i.quantity, product: { ...i.productId._doc } };
             });
@@ -422,23 +421,27 @@ exports.getCheckout = (req, res, next) => {
         .then(user => {
             products = user.cart.items;
             // console.log(product);
-            let total = 0;
             products.forEach(p => {
                 total += p.quantity * p.productId.price;
-            })
+            });
             return stripe.checkout.sessions.create({
-                payment_method_type: ['card'],
-                line_items: products.map(p => {
+                payment_method_types: ['card'],
+                line_items: products.map((p) => {
                     return {
-                        name: p.productId.title,
-                        description: p.productId.description,
-                        amount: p.productId.price * 100,
-                        currency: 'usd',
-                        quantity: p.quantity
+                      price_data: {
+                        currency: 'INR',
+                        product_data: {
+                          name: p.productId.title,
+                          description: p.productId.description,
+                        },
+                        unit_amount: p.productId.price * 100,
+                      },
+                      quantity: p.quantity,
                     };
-                }),
-                success_url: request.protocol + '://' +req.get('host') + '/checkout/success',
-                cancel_url: request.protocol + '://' +req.get('host') + '/checkout/cancel'
+                  }),
+                  mode: 'payment',
+                success_url: req.protocol + '://' +req.get('host') + '/checkout/success',
+                cancel_url: req.protocol + '://' +req.get('host') + '/checkout/cancel'
             });
         })
         .then(session => {
@@ -451,6 +454,7 @@ exports.getCheckout = (req, res, next) => {
             });
         })
         .catch(err => {
+            console.log(err)
             const error = new Error(err)
             error.httpStatusCode = 500;
             return next(error);
