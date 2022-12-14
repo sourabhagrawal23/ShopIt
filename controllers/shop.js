@@ -353,7 +353,6 @@ exports.getCheckoutSuccess = (req, res, next) => {
         .populate('cart.items.productId')
         //   .execPopulate()
         .then(user => {
-            console.log("Sourabh");
             const products = user.cart.items.map(i => {
                 return { quantity: i.quantity, product: { ...i.productId._doc } };
             });
