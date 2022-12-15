@@ -24,6 +24,7 @@ router.get('/checkout/success', isAuth, shopController.getCheckoutSuccess);
 
 router.get('/checkout/cancel', isAuth, shopController.getCheckout);
 
+// postOrder is no more used as Stripe payment has been added mow and checkout endpoints implemented.
 // router.post('/create-order', isAuth, shopController.postOrder);
 
 router.get('/orders', isAuth, shopController.getOrders);
