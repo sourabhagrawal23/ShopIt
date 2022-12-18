@@ -37,4 +37,4 @@
 
 ## Authentication
 
-![image](https://user-images.githubusercontent.com/44314046/208306832-9d9e8123-ea1a-40bc-b365-b0e49275749b.png)
+![image](https://user-images.githubusercontent.com/44314046/208306839-b0b47cc3-21a3-4906-a5cc-2b46cc83ff56.png)
