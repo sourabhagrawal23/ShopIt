@@ -36,3 +36,5 @@
 09. POST http://localhost:8080/new-password
 
 ## Authentication
+
+![image](https://user-images.githubusercontent.com/44314046/208306832-9d9e8123-ea1a-40bc-b365-b0e49275749b.png)
